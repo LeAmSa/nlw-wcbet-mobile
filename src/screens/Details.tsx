@@ -56,10 +56,6 @@ export function Details() {
     }
   }
 
-  //   if (isLoading) {
-  //     return <Loading />;
-  //   }
-
   useEffect(() => {
     getPollDetails();
   }, [id]);
