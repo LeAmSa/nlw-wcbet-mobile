@@ -1,10 +1,14 @@
 import { Button, HStack, Text, useTheme, VStack } from "native-base";
 import { X, Check } from "phosphor-react-native";
-import { getName } from "country-list";
+import { overwrite, getName } from "country-list";
+import { countriesNamesOverwritten } from "../utils/countries-names-overwritten";
 import dayjs from "dayjs";
 import ptBR from "dayjs/locale/pt-br";
 
 import { Team } from "./Team";
+
+//Change contries names to pt-br
+overwrite(countriesNamesOverwritten);
 
 interface GuessProps {
   id: string;
@@ -18,9 +22,9 @@ interface GuessProps {
 export interface GameProps {
   id: string;
   date: string;
-  firstTeamCountryCode: string;
-  secondTeamCountryCode: string;
-  guess: null | GuessProps;
+  homeTeamCountryCode: string;
+  awayTeamCountryCode: string;
+  bet: null | GuessProps;
 }
 
 interface Props {
@@ -40,7 +44,7 @@ export function Game({
 
   const when = dayjs(data.date)
     .locale(ptBR)
-    .format("DD [de] MMMM [de] YYYY [às] HH:00[h]");
+    .format("DD [de] MMMM [de] YYYY [às] HH:00");
 
   return (
     <VStack
@@ -54,12 +58,12 @@ export function Game({
       p={4}
     >
       <Text color="gray.100" fontFamily="heading" fontSize="sm">
-        {getName(data.firstTeamCountryCode)} vs.{" "}
-        {getName(data.secondTeamCountryCode)}
+        {getName(data.homeTeamCountryCode)} vs.{" "}
+        {getName(data.awayTeamCountryCode)}
       </Text>
 
       <Text color="gray.200" fontSize="xs">
-        {data.date}
+        {when}
       </Text>
 
       <HStack
@@ -69,7 +73,7 @@ export function Game({
         alignItems="center"
       >
         <Team
-          code={data.firstTeamCountryCode}
+          code={data.homeTeamCountryCode}
           position="right"
           onChangeText={setFirstTeamPoints}
         />
@@ -77,13 +81,13 @@ export function Game({
         <X color={colors.gray[300]} size={sizes[6]} />
 
         <Team
-          code={data.secondTeamCountryCode}
+          code={data.awayTeamCountryCode}
           position="left"
           onChangeText={setSecondTeamPoints}
         />
       </HStack>
 
-      {!data.guess && (
+      {!data.bet && (
         <Button
           size="xs"
           w="full"
