@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useToast, FlatList, Box } from "native-base";
+import { useToast, FlatList, VStack } from "native-base";
 
 import { Game, GameProps } from "./Game";
 import { EmptyMyPoolList } from "./EmptyMyPoolList";
@@ -27,7 +27,6 @@ export function Guesses({ poolId, code }: Props) {
 
       const response = await api.get(`/pools/${poolId}/matches`);
       setMatches(response.data.matches);
-      console.log(matches);
     } catch (error) {
       console.log(error);
 
@@ -79,22 +78,27 @@ export function Guesses({ poolId, code }: Props) {
   }, [poolId]);
 
   return (
-    // <FlatList
-    //   data={matches}
-    //   keyExtractor={(item) => item.id}
-    //   renderItem={({ item }) => (
-    //     <Game
-    //       data={item}
-    //       setFirstTeamPoints={setFirstTeamPoints}
-    //       setSecondTeamPoints={setSecondTeamPoints}
-    //       onGuessConfirm={() => {
-    //         handleBetConfirm(item.id);
-    //       }}
-    //     />
-    //   )}
-    //   _contentContainerStyle={{ pb: 10 }}
-    //   ListEmptyComponent={() => <EmptyMyPoolList code={code} />}
-    // />
-    <Box></Box>
+    <VStack flex={1}>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={matches}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <Game
+              data={item}
+              setFirstTeamPoints={setFirstTeamPoints}
+              setSecondTeamPoints={setSecondTeamPoints}
+              onGuessConfirm={() => {
+                handleBetConfirm(item.id);
+              }}
+            />
+          )}
+          _contentContainerStyle={{ pb: 10 }}
+          ListEmptyComponent={() => <EmptyMyPoolList code={code} />}
+        />
+      )}
+    </VStack>
   );
 }
