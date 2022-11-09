@@ -5,9 +5,9 @@
 
 ##Todo
 
-- [ ] Fix error in Guesses component
-- [ ] Change project structure:
-  - [ ] Register all world cup matches in db
-  - [ ] Filter by data on screen
-  - [ ] Show goals score in bet
+- [x] Fix error in Guesses component
+- [x] Change project structure:
+  - [x] Register all world cup matches in db
+  - [x] Filter by data on screen
+  - [x] Show goals score in bet
 - [ ] Add auth user to async storage to persists login
