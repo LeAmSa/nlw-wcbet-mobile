@@ -10,13 +10,13 @@ import { Team } from "./Team";
 //Change contries names to pt-br
 overwrite(countriesNamesOverwritten);
 
-interface GuessProps {
+export interface GuessProps {
   id: string;
   gameId: string;
   createdAt: string;
   participantId: string;
-  firstTeamPoints: number;
-  secondTeamPoints: number;
+  homeTeamGoals: number;
+  awayTeamGoals: number;
 }
 
 export interface GameProps {
@@ -30,14 +30,14 @@ export interface GameProps {
 interface Props {
   data: GameProps;
   onGuessConfirm: () => void;
-  setFirstTeamPoints: (value: string) => void;
-  setSecondTeamPoints: (value: string) => void;
+  setHomeTeamGoals: (value: string) => void;
+  setAwayTeamGoals: (value: string) => void;
 }
 
 export function Game({
   data,
-  setFirstTeamPoints,
-  setSecondTeamPoints,
+  setHomeTeamGoals,
+  setAwayTeamGoals,
   onGuessConfirm,
 }: Props) {
   const { colors, sizes } = useTheme();
@@ -74,16 +74,20 @@ export function Game({
       >
         <Team
           code={data.homeTeamCountryCode}
+          homeTeamGoals={data.bet?.homeTeamGoals}
+          awayTeamGoals={data.bet?.awayTeamGoals}
           position="right"
-          onChangeText={setFirstTeamPoints}
+          onChangeText={setHomeTeamGoals}
         />
 
         <X color={colors.gray[300]} size={sizes[6]} />
 
         <Team
           code={data.awayTeamCountryCode}
+          homeTeamGoals={data.bet?.homeTeamGoals}
+          awayTeamGoals={data.bet?.awayTeamGoals}
           position="left"
-          onChangeText={setSecondTeamPoints}
+          onChangeText={setAwayTeamGoals}
         />
       </HStack>
 
