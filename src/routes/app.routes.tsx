@@ -25,15 +25,16 @@ export function AppRoutes() {
         tabBarLabelPosition: "beside-icon",
         tabBarActiveTintColor: colors.yellow[500],
         tabBarInactiveTintColor: colors.gray[300],
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
           position: "absolute",
-          height: sizes[18],
+          height: sizes[14],
           borderTopWidth: 0,
           backgroundColor: colors.gray[800],
         },
         tabBarItemStyle: {
           position: "relative",
-          top: Platform.OS === "android" ? -10 : 0,
+          // top: Platform.OS === "android" ? -10 : 0,
         },
       }}
     >
