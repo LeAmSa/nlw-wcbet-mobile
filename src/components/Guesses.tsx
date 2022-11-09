@@ -39,17 +39,16 @@ export function Guesses({ poolId, code }: Props) {
 
       const response = await api.get(`/pools/${poolId}/matches`);
 
-      const allMatches = response.data.matches;
+      const allMatches = await response.data.matches;
 
       setMatches(allMatches);
       // console.log("All matches => ", allMatches);
 
-      const filtered = matches.filter(
+      const filtered = allMatches.filter(
         (match) => match.date.split("T")[0] === currentDate.format("YYYY-MM-DD")
       );
 
       setFilteredMatches(filtered);
-
       // console.log("FILTERED =>", filtered);
     } catch (error) {
       console.log(error);
@@ -70,7 +69,6 @@ export function Guesses({ poolId, code }: Props) {
     );
 
     setFilteredMatches(filteredMatchesByCurrentDate);
-    // console.log("FILTERED", filteredMatchesByCurrentDate);
   }
 
   async function handleBetConfirm(matchId: string) {
@@ -139,7 +137,7 @@ export function Guesses({ poolId, code }: Props) {
                 }}
               />
             )}
-            _contentContainerStyle={{ pb: 10 }}
+            _contentContainerStyle={{ pb: 20 }}
             ListEmptyComponent={() => <EmptyMyPoolList code={code} />}
           />
         </VStack>
