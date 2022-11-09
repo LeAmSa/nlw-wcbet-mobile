@@ -40,6 +40,7 @@ export function Team({
               : String(awayTeamGoals)
             : ""
         }
+        isDisabled={homeTeamGoals || awayTeamGoals}
       />
 
       {position === "right" && (
