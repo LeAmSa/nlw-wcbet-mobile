@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast, FlatList, VStack } from "native-base";
 
 import { Game, GameProps } from "./Game";
@@ -7,6 +7,9 @@ import { EmptyMyPoolList } from "./EmptyMyPoolList";
 import { Loading } from "./Loading";
 
 import { api } from "../services/api";
+import { DateSelect } from "./DateSelect";
+
+import dayjs from "dayjs";
 
 interface Props {
   poolId: string;
@@ -14,19 +17,40 @@ interface Props {
 }
 
 export function Guesses({ poolId, code }: Props) {
+  const initialRender = useRef(true);
+
   const [isLoading, setIsLoading] = useState(true);
+
   const [matches, setMatches] = useState<GameProps[]>([]);
-  const [firstTeamPoints, setFirstTeamPoints] = useState("");
-  const [secondTeamPoints, setSecondTeamPoints] = useState("");
+  const [filteredMatches, setFilteredMatches] = useState<GameProps[]>([]);
+
+  const [homeTeamGoals, setHomeTeamGoals] = useState("");
+  const [awayTeamGoals, setAwayTeamGoals] = useState("");
 
   const toast = useToast();
+
+  const [currentDate, setCurrentDate] = useState(dayjs("2022-11-20"));
+
+  //format("YYYY-MM-DDTHH:mm:ss[Z]")
 
   async function getMatches() {
     try {
       setIsLoading(true);
 
       const response = await api.get(`/pools/${poolId}/matches`);
-      setMatches(response.data.matches);
+
+      const allMatches = response.data.matches;
+
+      setMatches(allMatches);
+      // console.log("All matches => ", allMatches);
+
+      const filtered = matches.filter(
+        (match) => match.date.split("T")[0] === currentDate.format("YYYY-MM-DD")
+      );
+
+      setFilteredMatches(filtered);
+
+      // console.log("FILTERED =>", filtered);
     } catch (error) {
       console.log(error);
 
@@ -40,9 +64,18 @@ export function Guesses({ poolId, code }: Props) {
     }
   }
 
+  function getFilteredMatchesByCurrentDate() {
+    const filteredMatchesByCurrentDate = matches.filter(
+      (match) => match.date.split("T")[0] === currentDate.format("YYYY-MM-DD")
+    );
+
+    setFilteredMatches(filteredMatchesByCurrentDate);
+    // console.log("FILTERED", filteredMatchesByCurrentDate);
+  }
+
   async function handleBetConfirm(matchId: string) {
     try {
-      if (!firstTeamPoints.trim() || !secondTeamPoints.trim()) {
+      if (!homeTeamGoals.trim() || !awayTeamGoals.trim()) {
         return toast.show({
           title: "Informe o placar!",
           placement: "top",
@@ -51,8 +84,8 @@ export function Guesses({ poolId, code }: Props) {
       }
 
       await api.post(`/pools/${poolId}/matches/${matchId}/bets`, {
-        homeTeamGoals: Number(firstTeamPoints),
-        awayTeamGoals: Number(secondTeamPoints),
+        homeTeamGoals: Number(homeTeamGoals),
+        awayTeamGoals: Number(awayTeamGoals),
       });
 
       toast.show({
@@ -74,30 +107,42 @@ export function Guesses({ poolId, code }: Props) {
   }
 
   useEffect(() => {
+    initialRender.current
+      ? (initialRender.current = false)
+      : getFilteredMatchesByCurrentDate();
+  }, [currentDate]);
+
+  useEffect(() => {
     getMatches();
-  }, [poolId]);
+  }, []);
 
   return (
     <VStack flex={1}>
       {isLoading ? (
         <Loading />
       ) : (
-        <FlatList
-          data={matches}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <Game
-              data={item}
-              setFirstTeamPoints={setFirstTeamPoints}
-              setSecondTeamPoints={setSecondTeamPoints}
-              onGuessConfirm={() => {
-                handleBetConfirm(item.id);
-              }}
-            />
-          )}
-          _contentContainerStyle={{ pb: 10 }}
-          ListEmptyComponent={() => <EmptyMyPoolList code={code} />}
-        />
+        <VStack flex={1}>
+          <DateSelect
+            currentDate={currentDate}
+            setCurrentDate={setCurrentDate}
+          />
+          <FlatList
+            data={filteredMatches}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <Game
+                data={item}
+                setHomeTeamGoals={setHomeTeamGoals}
+                setAwayTeamGoals={setAwayTeamGoals}
+                onGuessConfirm={() => {
+                  handleBetConfirm(item.id);
+                }}
+              />
+            )}
+            _contentContainerStyle={{ pb: 10 }}
+            ListEmptyComponent={() => <EmptyMyPoolList code={code} />}
+          />
+        </VStack>
       )}
     </VStack>
   );
