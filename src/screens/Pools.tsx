@@ -27,7 +27,7 @@ export function Pools() {
       const response = await api.get("/pools");
       setPolls(response.data.pools);
 
-      console.log(response.data.pools);
+      // console.log(response.data.pools);
     } catch (error) {
       console.log(error);
       toast.show({
@@ -48,7 +48,7 @@ export function Pools() {
 
   return (
     <VStack flex={1} bgColor="gray.900">
-      <Header title="Meus bolões" showBackButton />
+      <Header title="Meus bolões" />
 
       <VStack
         mt={6}
